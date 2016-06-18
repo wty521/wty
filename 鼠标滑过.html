@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>鼠标滑过jQuery</title>
+	<style>
+		.tip{
+			height: 25px;
+			line-height: 25px;
+			background: yellow;
+			border: 1px solid black;
+			position:absolute;
+		}
+	</style>
+</head>
+<body>
+	<a href="" title="item1" class="xxx">item1</a><br><br>
+	<a href="" title="item2" class="xxx">item2</a><br><br>
+	<a href="" title="item3" class="xxx">item3</a><br><br>
+	<a href="" title="item4" class="xxx">item4</a><br><br>
+	
+	<script src="jquery-1.11.3.min.js"></script>
+	<script>
+		// $('.xxx').on('mouseover',function(){
+
+		// }).on(mouseout,function(){
+
+		// })
+		$(function(){
+			$('.xxx').hover(function(e){
+				this.tempTitle = this.title;
+				$('<div class="tip">'+this.tempTittle+'</div>').css({
+					left:e.pageX + 20,
+					top:e.pageY + 20
+				}).appendTo('body');
+				this.title = '';
+			},function(e){
+				$('.tip').remove();
+				this.title = this.tempTitle;
+			}).on('mousemove', function(e){
+				$('.tip').offset({
+					left:e.pageX + 20,
+					top:e.pageY + 20
+				});
+			});
+		});
+		
+	</script>
+
+
+
+</body>
+</html>
