@@ -1,0 +1,165 @@
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2012/2/15 22:13:49                           */
+/*==============================================================*/
+
+
+DROP TABLE IF EXISTS BLOG_CATALOGS;
+
+DROP TABLE IF EXISTS BLOGS;
+
+DROP TABLE IF EXISTS CODE_CATALOGS;
+
+DROP TABLE IF EXISTS CODES;
+
+DROP TABLE IF EXISTS COMMENTS;
+
+DROP TABLE IF EXISTS FELLOWS;
+
+DROP TABLE IF EXISTS MESSAGES;
+
+DROP TABLE IF EXISTS USERS;
+
+/*==============================================================*/
+/* Table: BLOG_CATALOGS                                         */
+/*==============================================================*/
+CREATE TABLE BLOG_CATALOGS
+(
+   CATALOG_ID           INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   NAME                 VARCHAR(50) COMMENT '分类名称',
+   PRIMARY KEY (CATALOG_ID)
+);
+
+/*==============================================================*/
+/* Table: BLOGS                                                 */
+/*==============================================================*/
+CREATE TABLE BLOGS
+(
+   BLOG_ID              INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   CATALOG_ID           INT COMMENT '所属分类',
+   WRITER               INT COMMENT '作者',
+   TITLE                VARCHAR(100) COMMENT '标题',
+   CONTENT              TEXT COMMENT '内容',
+   ADD_TIME             DATETIME COMMENT '添加时间',
+   CLICK_RATE           INT COMMENT '点击率',
+   PRIMARY KEY (BLOG_ID)
+);
+
+/*==============================================================*/
+/* Table: CODE_CATALOGS                                         */
+/*==============================================================*/
+CREATE TABLE CODE_CATALOGS
+(
+   CATALOG_ID           INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   CATALOG_NAME         VARCHAR(50) COMMENT '分类名称',
+   P_CATALOG_ID         INT COMMENT '父类编号',
+   SORT_VALUE           INT COMMENT '排序值',
+   PRIMARY KEY (CATALOG_ID)
+);
+
+/*==============================================================*/
+/* Table: CODES                                                 */
+/*==============================================================*/
+CREATE TABLE CODES
+(
+   CODE_ID              INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   CATALOG_ID           INT COMMENT '所属分类',
+   USER_ID              INT COMMENT '添加人',
+   TITLE                VARCHAR(200) COMMENT '代码标题',
+   CONTENT              TEXT COMMENT '代码内容',
+   DESCRIPTION          VARCHAR(500) COMMENT '代码描述',
+   ADD_TIME             DATETIME COMMENT '添加时间',
+   FILE_NAME            VARCHAR(50) COMMENT '保存文件名',
+   PRIMARY KEY (CODE_ID)
+);
+
+/*==============================================================*/
+/* Table: COMMENTS                                              */
+/*==============================================================*/
+CREATE TABLE COMMENTS
+(
+   COMMENT_ID           INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   COMMENTATOR          INT COMMENT '评论人',
+   BLOG_ID              INT COMMENT '评论博客',
+   CONTENT              TEXT COMMENT '评论内容',
+   ADD_TIME             DATETIME COMMENT '评论时间',
+   PRIMARY KEY (COMMENT_ID)
+);
+
+/*==============================================================*/
+/* Table: FELLOWS                                               */
+/*==============================================================*/
+CREATE TABLE FELLOWS
+(
+   FELLOW_ID            INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   USER_ID              INT COMMENT '被关注的人',
+   FELLOWER             INT COMMENT '关注者',
+   PRIMARY KEY (FELLOW_ID)
+);
+
+/*==============================================================*/
+/* Table: MESSAGES                                              */
+/*==============================================================*/
+CREATE TABLE MESSAGES
+(
+   MSG_ID               INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   REPLY_ID             INT COMMENT '回复编号',
+   SENDER               INT COMMENT '留言人',
+   RECEIVER             INT COMMENT '留言对象',
+   CONTENT              TEXT COMMENT '留言内容',
+   ADD_TIME             DATETIME COMMENT '留言时间',
+   PRIMARY KEY (MSG_ID)
+);
+
+/*==============================================================*/
+/* Table: USERS                                                 */
+/*==============================================================*/
+CREATE TABLE USERS
+(
+   USER_ID              INT NOT NULL AUTO_INCREMENT COMMENT '编号',
+   ACCOUNT              VARCHAR(50) COMMENT '登录帐号',
+   PASSWORD             VARCHAR(20) COMMENT '登录密码',
+   NAME                 VARCHAR(50) COMMENT '姓名',
+   GENDER               VARCHAR(2) COMMENT '性别',
+   BIRTHDAY             VARCHAR(20) COMMENT '生日',
+   PROVINCE             VARCHAR(20) COMMENT '居住地区',
+   CITY                 VARCHAR(20) COMMENT '居住城市',
+   SIGNATURE            VARCHAR(200) COMMENT '个性签名',
+   IMG                  VARCHAR(100) COMMENT '个人头像',
+   MOOD                 VARCHAR(100) COMMENT '我的心情',
+   PRIMARY KEY (USER_ID)
+);
+
+ALTER TABLE BLOGS ADD CONSTRAINT FK_CATALOGS_BLOGS FOREIGN KEY (CATALOG_ID)
+      REFERENCES BLOG_CATALOGS (CATALOG_ID) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+ALTER TABLE BLOGS ADD CONSTRAINT FK_USERS_BLOGS FOREIGN KEY (WRITER)
+      REFERENCES USERS (USER_ID) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+ALTER TABLE CODES ADD CONSTRAINT FK_CATALOGS_CODE FOREIGN KEY (CATALOG_ID)
+      REFERENCES CODE_CATALOGS (CATALOG_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE CODES ADD CONSTRAINT FK_USERS_CODES FOREIGN KEY (USER_ID)
+      REFERENCES USERS (USER_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE COMMENTS ADD CONSTRAINT FK_BLOGS_COMMENTS FOREIGN KEY (BLOG_ID)
+      REFERENCES BLOGS (BLOG_ID) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+ALTER TABLE COMMENTS ADD CONSTRAINT FK_USERS_COMMENTS FOREIGN KEY (COMMENTATOR)
+      REFERENCES USERS (USER_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE FELLOWS ADD CONSTRAINT FK_OTHERS_FELLOW_USERS FOREIGN KEY (FELLOWER)
+      REFERENCES USERS (USER_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE FELLOWS ADD CONSTRAINT FK_USERS_FELLOW_OTHERS FOREIGN KEY (USER_ID)
+      REFERENCES USERS (USER_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE MESSAGES ADD CONSTRAINT FK_MESSAGES_REPLY FOREIGN KEY (REPLY_ID)
+      REFERENCES MESSAGES (MSG_ID) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+ALTER TABLE MESSAGES ADD CONSTRAINT FK_USERS_RECEIVE_MESSAGES FOREIGN KEY (RECEIVER)
+      REFERENCES USERS (USER_ID) ON DELETE CASCADE ON UPDATE RESTRICT;
+
+ALTER TABLE MESSAGES ADD CONSTRAINT FK_USERS_SEND_MESSAGES FOREIGN KEY (SENDER)
+      REFERENCES USERS (USER_ID) ON DELETE CASCADE ON UPDATE RESTRICT;
+
